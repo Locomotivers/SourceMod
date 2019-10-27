@@ -13,20 +13,38 @@ public Action DoTheRest(Handle timer)
 
 public void SQL_ConnectToDB()
 {
-	char sError[512];
-	DB = SQLite_UseDatabase("AchievementsGO",sError,sizeof(sError));
-	
-	SQL_CheckIfConnected(sError);
+	//char sError[512];
+	//DB = SQLite_UseDatabase("AchievementsGO",sError,sizeof(sError));
+	if(SQL_CheckConfig("customstat"))
+	{
+		Database.Connect(SQL_TDBConnect,"customstat");
+	}
+	//SQL_CheckIfConnected(sError);
 }
 
-public void SQL_CheckIfConnected(char[] sError)
-{
-	if (DB == null)
-	{
-		LogMessage("Could not connect to the DataBase! Error: %s", sError);
+public void SQL_TDBConnect(Database db, const char[] error, any data) {
+	if (db == INVALID_HANDLE){
+		SetFailState("DB timer setup failed. Error Reason: %s", error);
+		return;
 	}
-	else	IsConnectionEstablished = true;
+
+	if(!db.SetCharset("utf8mb4"))
+		db.SetCharset("utf8");
+	
+	DB = db;
+	LogToFileEx(g_sLogLocation, "[ACGO] DB Connected!");
+
+	return;
 }
+
+// public void SQL_CheckIfConnected(char[] sError)
+// {
+// 	if (DB == null)
+// 	{
+// 		LogMessage("Could not connect to the DataBase! Error: %s", sError);
+// 	}
+// 	else	IsConnectionEstablished = true;
+// }
 
 // @@ Creating Achievements table
 public void SQL_Create_Achievements_Table()
@@ -41,7 +59,7 @@ public void SQL_Create_Achievements_Table()
 
 public void FormatAchievementsQuery(char[] query)
 {
-	Format(query, 511, "CREATE TABLE IF NOT EXISTS `Achievements` (`ID`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,`Name`	TEXT NOT NULL,`Description`	TEXT NOT NULL,`Category`	TEXT,`Value`	INTEGER NOT NULL); ");	
+	Format(query, 511, "CREATE TABLE IF NOT EXISTS  Achievements  ( ID 	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, Name 	TEXT NOT NULL, Description 	TEXT NOT NULL, Category 	TEXT, Value 	INTEGER NOT NULL); ");	
 }
 public void CheckIf_Achievements_QueryPassed(Database db, DBResultSet results, const char[] error, any data)
 {
@@ -68,7 +86,7 @@ public void SQL_Create_Players_Table()
 
 public void FormatPlayersQuery(char[] query)
 {
-	Format(query, 511, "CREATE TABLE IF NOT EXISTS `Players` (`PlayerID`	INTEGER NOT NULL,`AchievementID`	INTEGER NOT NULL,`Progress`	INTEGER NOT NULL,UNIQUE(`PlayerID`,`AchievementID`)); ");	
+	Format(query, 511, "CREATE TABLE IF NOT EXISTS  Players  ( PlayerID 	INTEGER NOT NULL, AchievementID 	INTEGER NOT NULL, Progress 	INTEGER NOT NULL,UNIQUE( PlayerID , AchievementID )); ");	
 }
 public void CheckIf_Players_QueryPassed(Database db, DBResultSet results, const char[] error, any data)
 {
@@ -95,7 +113,7 @@ public void SQL_Create_PlayerID_Table()
 
 public void FormatPlayerIdTableQuery(char[] query)
 {
-	Format(query, 511, "CREATE TABLE IF NOT EXISTS `PlayerID` (`ID`	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,`SteamID`	TEXT NOT NULL UNIQUE,`Name`	TEXT NOT NULL,`AccomplishedAchievements` INT NOT NULL); ");	
+	Format(query, 511, "CREATE TABLE IF NOT EXISTS  PlayerID  ( ID 	INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE, SteamID 	TEXT NOT NULL UNIQUE, Name 	TEXT NOT NULL, AccomplishedAchievements  INT NOT NULL); ");	
 }
 public void CheckIf_PlayerIdTable_QueryPassed(Database db, DBResultSet results, const char[] error, any data)
 {

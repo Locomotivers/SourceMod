@@ -1,4 +1,4 @@
-// @@ Loading Achievement ID, and eventually inserting if doesn't exist
+// @@ Loading Achievement ID, and eventually inserting if doesn t exist
 
 public int SQL_LoadAchievement(DataPack NewAchievementData) // AchievementsGO_Natives.sp
 {
@@ -19,7 +19,7 @@ public int SQL_LoadAchievement(DataPack NewAchievementData) // AchievementsGO_Na
 	{
 		char error[255];
 		SQL_GetError(DB, error, sizeof(error));
-		LogMessage("Server couldn't get the achievement data (from plugin)! Error: %s", error);
+		LogMessage("Server couldn t get the achievement data (from plugin)! Error: %s", error);
 		SQL_UnlockDatabase(DB);
 		return -1;
 	}
@@ -62,7 +62,7 @@ public int SQL_LoadAchievement(DataPack NewAchievementData) // AchievementsGO_Na
 
 public void FormatAchievementLoadQuery(char[] query, size, char[] name)
 {
-	Format(query, size, "SELECT `ID` FROM `Achievements` WHERE `Name`='%s'", name);
+	Format(query, size, "SELECT  ID  FROM  Achievements  WHERE  Name = %s", name);
 }
 
 public void AddAchievementToDatabase(DataPack NewAchievementData)
@@ -86,7 +86,7 @@ public void AddAchievementToDatabase(DataPack NewAchievementData)
 	{
 		char error[255];
 		SQL_GetError(DB, error, sizeof(error));
-		LogMessage("Server couldn't get the achievement data (from plugin)! Error: %s", error);
+		LogMessage("Server couldn t get the achievement data (from plugin)! Error: %s", error);
 		SQL_UnlockDatabase(DB);
 		return;
 	}
@@ -95,7 +95,7 @@ public void AddAchievementToDatabase(DataPack NewAchievementData)
 
 public void FormatAchievementInsertQuery(char[] query, size, char[] Name, char[] Description, char[] Category, int Value)
 {
-	Format(query, size, "INSERT INTO `Achievements`(`Name`,`Description`,`Category`,`Value`) VALUES('%s','%s','%s',%d)", Name, Description, Category, Value);
+	Format(query, size, "INSERT INTO  Achievements ( Name , Description , Category , Value ) VALUES( %s , %s , %s ,%d)", Name, Description, Category, Value);
 }
 
 public void AddAchievementToArrays(int IdOfNewAchievement, DataPack NewAchievementData)
@@ -141,7 +141,7 @@ public void UpdateAchievementInfo(int IdOfNewAchievement, DataPack NewAchievemen
 
 public void FormatUpdateAchievementQuery(int IdOfNewAchievement, char[] FormatBuffer, char[] Name, char[] Description, char[] Category, int Value)
 {
-	Format(FormatBuffer, 511, "UPDATE `Achievements` SET `Name`='%s', `Description`='%s', `Category`='%s', `Value`=%d WHERE `ID`=%d", Name, Description, Category, Value, IdOfNewAchievement);
+	Format(FormatBuffer, 511, "UPDATE  Achievements  SET  Name = %s,  Description = %s,  Category = %s,  Value =%d WHERE  ID =%d", Name, Description, Category, Value, IdOfNewAchievement);
 }
 
 public void UpdateAchievementResults(Database db, DBResultSet results, const char[] error, DataPack NewAchievementData)
@@ -195,7 +195,7 @@ public void FormatLoadClientIdQuery(char[] query, int client)
 {
 	char SteamIdBuffer[128];
 	GetClientAuthId(client, AuthId_Steam2, SteamIdBuffer, sizeof(SteamIdBuffer));
-	Format(query, 511, "SELECT `ID`,`AccomplishedAchievements` FROM `PlayerID` WHERE `SteamID`='%s'", SteamIdBuffer);
+	Format(query, 511, "SELECT  ID , AccomplishedAchievements  FROM  PlayerID  WHERE  SteamID = %s", SteamIdBuffer);
 }
 
 public void ProcessPlayerIdResults(Database db, DBResultSet results, const char[] error, int clientUserId)
@@ -211,7 +211,7 @@ public void ProcessPlayerIdResults(Database db, DBResultSet results, const char[
 	
 	if (!client)	return;
 	
-	// if a certain player hasn't yet obtained his own PlayerID, we need to insert new row to the table
+	// if a certain player hasn t yet obtained his own PlayerID, we need to insert new row to the table
 	if(results.RowCount == 0)
 	{
 		InsertPlayerIdToDatabase(client);
@@ -242,7 +242,7 @@ public void FormatInsertClientIdQuery(char[] query, int client)
 	char NameBuffer[MAX_NAME_LENGTH];
 	GetClientName(client, NameBuffer, sizeof(NameBuffer));
 	GetClientAuthId(client, AuthId_Steam2, SteamIdBuffer, sizeof(SteamIdBuffer));
-	Format(query, 511, "INSERT INTO `PlayerID`(`SteamID`,`Name`,`AccomplishedAchievements`) VALUES('%s','%s',0)", SteamIdBuffer,NameBuffer);
+	Format(query, 511, "INSERT INTO  PlayerID ( SteamID , Name , AccomplishedAchievements ) VALUES( %s, %s,0)", SteamIdBuffer,NameBuffer);
 }
 
 public void ProcessInsertPlayerIdResults(Database db, DBResultSet results, const char[] error, int clientUserId)
@@ -257,7 +257,7 @@ public void ProcessInsertPlayerIdResults(Database db, DBResultSet results, const
 	
 	if (!client)	return;
 	
-	// now a player has PlayerID - it's time to obtain it....
+	// now a player has PlayerID - it s time to obtain it....
 	LoadPlayerID(client);
 }
 
@@ -314,7 +314,7 @@ public Action MakeDelay(Handle timer, int clientUserId)
 public void FormatAchievementsSelectQuery(char[] query, int client, int i)
 {
 	int ID = GetArrayCell(AchievementID, i);
-	Format(query, 511, "SELECT * FROM `Players` WHERE `PlayerID`=%d AND `AchievementID`=%d AND EXISTS(SELECT * FROM `Players` WHERE `PlayerID`=%d AND `AchievementID`=%d)", PlayerID[client], ID, PlayerID[client], ID);	
+	Format(query, 511, "SELECT * FROM  Players  WHERE  PlayerID =%d AND  AchievementID =%d AND EXISTS(SELECT * FROM  Players  WHERE  PlayerID =%d AND  AchievementID =%d)", PlayerID[client], ID, PlayerID[client], ID);	
 }
 
 public void ProcessPlayerAchievementResults(Database db, DBResultSet results, const char[] error, DataPack ClientAndIndex)
@@ -382,7 +382,7 @@ public void InsertPlayerAchievementToDatabase(DataPack ClientAndIndex)
 public void FormatPlayerInsertionQuery(char[] query, int client, int i)
 {
 	int ID = GetArrayCell(AchievementID, i);
-	Format(query, 511, "INSERT INTO `Players`(`PlayerID`,`AchievementID`,`Progress`) VALUES(%d,%d,0)", PlayerID[client], ID);
+	Format(query, 511, "INSERT INTO  Players ( PlayerID , AchievementID , Progress ) VALUES(%d,%d,0)", PlayerID[client], ID);
 }
 
 public void ProcessPlayerInsertionResults(Database db, DBResultSet results, const char[] error, any data)
